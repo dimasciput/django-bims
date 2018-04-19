@@ -81,12 +81,11 @@ class BiologicalCollectionRecord(models.Model):
             if (f.one_to_many or f.one_to_one)
                and f.auto_created and not f.concrete
         ]
-        rel_obj = rel_objs[0]
-        if rel_obj.related_model == type(self):
-            return None
-        else:
-            return getattr(self, rel_obj.get_accessor_name())
-
+        for rel_obj in rel_objs:
+            try:
+                return getattr(self, rel_obj.get_accessor_name())
+            except AttributeError:
+                continue
 
 @receiver(models.signals.post_save)
 def collection_post_save_handler(sender, instance, **kwargs):
