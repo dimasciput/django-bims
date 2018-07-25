@@ -45,6 +45,7 @@ install:
 
 script:
   - make flake8-check
+  - make gruntserver
   - make build ARGS="--log-level ERROR"
   - make up ARGS="--log-level ERROR"
   - make update-migrations ARGS="--log-level ERROR"

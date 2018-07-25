@@ -8,7 +8,7 @@ remote_user: travis
 # Your linux/mac group that will run ansible
 remote_group: travis
 # Your project location (this repo)
-project_path: "/home/travis/build/kartoza/django-bims"
+project_path: "/home/travis/build/dimasciput/django-bims"
 # True if it will be running on Travis
 on_travis: True
 
