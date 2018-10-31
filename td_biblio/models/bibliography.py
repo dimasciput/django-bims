@@ -30,7 +30,7 @@ class AbstractHuman(models.Model):
     class Meta:
         abstract = True
 
-    def __str__(self):
+    def __unicode__(self):
         return self.get_formatted_name()
 
     def save(self, *args, **kwargs):
@@ -344,7 +344,7 @@ class Entry(models.Model):
         verbose_name_plural = _("Entries")
         ordering = ('-publication_date',)
 
-    def __str__(self):
+    def __unicode__(self):
         """Format entry with a default bibliography style"""
         # Authors
         author_str = '%(last_name)s %(first_initial)s'

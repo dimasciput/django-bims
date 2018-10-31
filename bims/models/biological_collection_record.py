@@ -163,6 +163,11 @@ class BiologicalCollectionRecord(models.Model):
             return True
         return False
 
+    def __unicode__(self):
+        return '%s - %s' % (
+            self.original_species_name ,
+            self.collection_date)
+
 
 @receiver(models.signals.post_save)
 def collection_post_save_handler(sender, instance, **kwargs):
