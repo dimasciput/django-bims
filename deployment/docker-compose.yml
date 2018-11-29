@@ -118,7 +118,7 @@ services:
       - geoserver:geoserver
       - rabbitmq:rabbitmq
       - cache:cache
-      - gbif_ipt:gbif_ipt
+      - mapproxy:mapproxy
     volumes:
       - ../../django-bims:/home/web/django_project
       - ./static:/home/web/static:rw
@@ -175,3 +175,11 @@ services:
     volumes:
       - ./ipt:/usr/local/ip
     restart: unless-stopped
+
+  mapproxy:
+    image: kartoza/mapproxy
+    hostname: mapproxy
+    volumes:
+      - ./mapproxy:/mapproxy
+    ports:
+      - "63307:8080"
