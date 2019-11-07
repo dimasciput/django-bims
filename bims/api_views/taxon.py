@@ -134,6 +134,7 @@ class FindTaxon(APIView):
 
         # Find classes to narrow down the results
         taxon_group = query_dict.get('taxonGroup', None)
+        taxon_name = query_dict.get('q', None)
         if taxon_group:
             del query_dict['taxonGroup']
             try:
@@ -159,15 +160,32 @@ class FindTaxon(APIView):
             key = gbif['key']
             if key in taxon_key:
                 continue
-            local = Taxonomy.objects.filter(gbif_key=key).exists()
+            taxa = Taxonomy.objects.filter(gbif_key=key)
             taxon_list.append({
                 'scientificName': gbif['scientificName'],
                 'canonicalName': gbif['canonicalName'],
                 'rank': gbif['rank'],
                 'key': key,
+                'taxaId': '',
                 'source': 'gbif',
-                'storedLocal': local
+                'storedLocal': taxa.exists()
             })
+
+        if not taxon_list:
+            # Find from database
+            taxa = Taxonomy.objects.filter(
+                canonical_name__icontains=taxon_name
+            )
+            if taxa.exists():
+                for taxon in taxa:
+                    taxon_list.append({
+                        'scientificName': taxon.scientific_name,
+                        'canonicalName': taxon.canonical_name,
+                        'rank': taxon.rank,
+                        'key': taxon.gbif_key,
+                        'source': 'local' if not taxon.gbif_key else 'gbif',
+                        'storedLocal': True
+                    })
 
         return Response(taxon_list)
 
