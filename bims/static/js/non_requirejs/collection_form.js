@@ -454,7 +454,7 @@ function populateFindTaxonTable(table, data) {
 
         let action = (`<button 
                         type="button" 
-                        onclick="addNewTaxonToObservedList('${canonicalName}',${key},${rank})" 
+                        onclick="addNewTaxonToObservedList('${canonicalName}',${key})" 
                         class="btn btn-success"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;ADD
                        </button>`);
         tableBody.append(`<tr>
