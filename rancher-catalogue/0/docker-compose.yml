@@ -477,24 +477,26 @@ services:
     restart: unless-stopped
 
   db: &db
-    image: kartoza/postgis:9.6-2.4
+    image: kartoza/postgis:12.0
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASS=${POSTGRES_PASS}
       - ALLOW_IP_RANGE=${POSTGRES_HBA_RANGE}
+      - POSTGRES_MULTIPLE_EXTENSIONS=postgis,hstore,postgis_topology,ogr_fdw
     volumes:
       - db-backups:/backups
       - postgis-data:/sql
     restart: unless-stopped
 
   geonode-db:
-    image: kartoza/postgis:9.6-2.4
+    image: kartoza/postgis:12.0
     environment:
       ALLOW_IP_RANGE: ${POSTGRES_HBA_RANGE}
       POSTGRES_DB: geonode_data
       POSTGRES_PASS: docker
       POSTGRES_USER: docker
+      POSTGRES_MULTIPLE_EXTENSIONS: postgis,hstore,postgis_topology,ogr_fdw
     volumes:
       - geonode-db-backups:/backups
       - postgis-data:/sql
