@@ -45,35 +45,8 @@ let showSiteCodeError = function () {
 
 $(function () {
     let southAfrica = [2910598.850835484, -3326258.3640110902];
-    let mapView = new ol.View({
-        center: southAfrica,
-        zoom: 5
-    });
-
-    // map = new ol.Map({
-    //     target: 'site-map',
-    //     layers: [
-    //         new ol.layer.Tile({
-    //             source: new ol.source.OSM()
-    //         }),
-    //     ],
-    //     view: mapView
-    // });
-
-    let options = {
-        url: 'https://maps.kartoza.com/geoserver/wms',
-        params: {
-            layers: 'kartoza:sa_rivers',
-            format: 'image/png'
-        }
-    };
-
-    let riverLayer = new ol.layer.Tile({
-        source: new ol.source.TileWMS(options)
-    });
-
-    // map.addLayer(riverLayer);
     map.getView().setCenter(southAfrica)
+    map.getView().setZoom(5)
 
     map.on('click', function (e) {
         let coords = ol.proj.toLonLat(e.coordinate);
@@ -86,21 +59,6 @@ $(function () {
 
     $('[data-toggle="popover"]').popover();
 
-    let biodiversityLayersOptions = {
-        url: geoserverPublicUrl + 'wms',
-        params: {
-            LAYERS: locationSiteGeoserverLayer,
-            FORMAT: 'image/png8',
-            viewparams: 'where:' + defaultWMSSiteParameters
-        },
-        ratio: 1,
-        serverType: 'geoserver'
-    };
-    let biodiversitySource = new ol.source.ImageWMS(biodiversityLayersOptions);
-    let biodiversityTileLayer = new ol.layer.Image({
-        source: biodiversitySource
-    });
-    // map.addLayer(biodiversityTileLayer);
     $('#update-coordinate').click(updateCoordinateHandler);
     $('#update-site-code').click(updateSiteCode);
     $('#fetch-river-name').click(fetchRiverName);

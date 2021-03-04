@@ -23,17 +23,9 @@
 <script>
     let map = null;
     const basemapLayers = {% basemap_layers %};
+    const _locationSiteGeoserverLayer = '{{ bims_preferences.geoserver_location_site_layer }}';
+    const _defaultWMSSiteParameters = '{{ preferences.SiteSetting.default_location_site_cluster }}';
     (function () {
-        const _markerSource = new ol.source.Vector();
-        const _markerStyle = new ol.style.Style({
-            image: new ol.style.Icon(({
-                anchor: [0.5, 46],
-                anchorXUnits: 'fraction',
-                anchorYUnits: 'pixels',
-                opacity: 0.75,
-                src: '/static/img/map-marker.png'
-            }))
-        });
         const getBaseMaps = () => {
             const baseMaps = [
                 new ol.layer.Tile({
@@ -77,6 +69,36 @@
                     baseMaps.push(_baseMap);
                 }
             }
+            let options = {
+                url: 'https://maps.kartoza.com/geoserver/wms',
+                params: {
+                    layers: 'kartoza:sa_rivers',
+                    format: 'image/png'
+                }
+            };
+            let riverLayer = new ol.layer.Tile({
+                title: 'River',
+                source: new ol.source.TileWMS(options),
+                type: 'layer',
+            });
+            baseMaps.unshift(riverLayer)
+            let biodiversityLayersOptions = {
+                url: geoserverPublicUrl + 'wms',
+                params: {
+                    LAYERS: _locationSiteGeoserverLayer,
+                    FORMAT: 'image/png8',
+                    viewparams: 'where:' + _defaultWMSSiteParameters
+                },
+                ratio: 1,
+                serverType: 'geoserver'
+            };
+            let biodiversitySource = new ol.source.ImageWMS(biodiversityLayersOptions);
+            let biodiversityTileLayer = new ol.layer.Image({
+                title: 'Sites',
+                type: 'layer',
+                source: biodiversitySource
+            });
+            baseMaps.unshift(biodiversityTileLayer);
             return baseMaps.reverse()
         }
         map = new ol.Map({
