@@ -126,3 +126,18 @@ class TestEditReference(TestCase):
             updated_reference.source.journal.name,
             post_dict['source']
         )
+
+    def test_delete_source_reference(self):
+        self.client.login(
+            username='@.test',
+            password='psst'
+        )
+        self.client.post(
+            '/delete-source-reference/{}/'.format(
+                self.source_reference.id
+            )
+        )
+        references = SourceReference.objects.filter(
+            id=self.source_reference.id
+        )
+        self.assertFalse(references.exists())

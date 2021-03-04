@@ -1,5 +1,5 @@
 import json
-from django.views.generic import ListView, UpdateView
+from django.views.generic import ListView, UpdateView, DeleteView
 from django.db.models import Q
 from django.contrib.auth import get_user_model
 from django.urls import reverse
@@ -18,7 +18,7 @@ from bims.models.bims_document import BimsDocument, BimsDocumentAuthorship
 
 class SourceReferenceListView(ListView):
     model = SourceReference
-    template_name = 'source_reference_list.html'
+    template_name = 'source_references/source_reference_list.html'
     paginate_by = 15
     source_reference_type = {
         'database': SourceReferenceDatabase,
@@ -155,8 +155,20 @@ class SourceReferenceListView(ListView):
         return context
 
 
+class DeleteSourceReferenceView(UserPassesTestMixin, DeleteView):
+    model = SourceReference
+    success_url = reverse('source-references')
+
+    def test_func(self):
+        if self.request.user.is_anonymous:
+            return False
+        if self.request.user.is_superuser:
+            return True
+        return self.request.user.has_perm('bims.change_sourcereference')
+
+
 class EditSourceReferenceView(UserPassesTestMixin, UpdateView):
-    template_name = 'edit_source_reference.html'
+    template_name = 'source_references/source_reference_edit.html'
     model = SourceReference
     fields = '__all__'
 

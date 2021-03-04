@@ -70,7 +70,8 @@ from bims.views.dashboard_management import DashboardManagementView
 from bims.views.harvest_collection_data import HarvestCollectionView
 from bims.views.source_reference import (
     SourceReferenceListView,
-    EditSourceReferenceView
+    EditSourceReferenceView,
+    DeleteSourceReferenceView
 )
 from bims.views.profile import ProfileView
 from bims.views.backups_management import BackupsManagementView
@@ -187,6 +188,9 @@ urlpatterns = [
     url(r'^edit-source-reference/(?P<pk>\d+)/$',
         EditSourceReferenceView.as_view(),
         name='edit-source-reference'),
+    url(r'^delete-source-reference/(?P<pk>\d+)/$',
+        EditSourceReferenceView.as_view(),
+        name='delete-source-reference'),
     url(r'^summary-report/$', SummaryReportView.as_view(),
         name='summary-report'),
     url(r'^profile/(?P<slug>\w+)/$', ProfileView.as_view(),
