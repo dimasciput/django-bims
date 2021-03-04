@@ -1,4 +1,4 @@
-let map = null;
+// let map = null;
 let markerSource = null;
 let riversLayer = 'https://maps.kartoza.com/geoserver/wms';
 
@@ -50,15 +50,15 @@ $(function () {
         zoom: 5
     });
 
-    map = new ol.Map({
-        target: 'site-map',
-        layers: [
-            new ol.layer.Tile({
-                source: new ol.source.OSM()
-            }),
-        ],
-        view: mapView
-    });
+    // map = new ol.Map({
+    //     target: 'site-map',
+    //     layers: [
+    //         new ol.layer.Tile({
+    //             source: new ol.source.OSM()
+    //         }),
+    //     ],
+    //     view: mapView
+    // });
 
     let options = {
         url: 'https://maps.kartoza.com/geoserver/wms',
@@ -72,7 +72,8 @@ $(function () {
         source: new ol.source.TileWMS(options)
     });
 
-    map.addLayer(riverLayer);
+    // map.addLayer(riverLayer);
+    map.getView().setCenter(southAfrica)
 
     map.on('click', function (e) {
         let coords = ol.proj.toLonLat(e.coordinate);
@@ -99,7 +100,7 @@ $(function () {
     let biodiversityTileLayer = new ol.layer.Image({
         source: biodiversitySource
     });
-    map.addLayer(biodiversityTileLayer);
+    // map.addLayer(biodiversityTileLayer);
     $('#update-coordinate').click(updateCoordinateHandler);
     $('#update-site-code').click(updateSiteCode);
     $('#fetch-river-name').click(fetchRiverName);

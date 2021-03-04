@@ -27,10 +27,6 @@
 {% endblock %}
 
 {% block body_content %}
-    <form action="{{ request.path }}" method="post" id="fish-form"
-          class="needs-validation" novalidate enctype="multipart/form-data">
-        {% csrf_token %}
-        <input type="hidden" id="site-id" name="site" value="{{ object.site.id }}">
         <div class="body-form container">
             <div class="dashboard-title">
                 <h2>Update {{ taxon_group.name }} data for site {% if object.site.site_code %}{{ object.site.site_code }} {% else %}
@@ -41,7 +37,11 @@
                  style="display: none;">
 
             </div>
-            <div id="fish-map"></div>
+        {% include "map_snippet.html" %}
+    <form action="{{ request.path }}" method="post" id="fish-form"
+          class="needs-validation" novalidate enctype="multipart/form-data">
+        {% csrf_token %}
+            <input type="hidden" id="site-id" name="site" value="{{ object.site.id }}">
             <div class="form-group row">
                 <label for="date"
                        class="col-sm-1 col-form-label col-form-label">Latitude</label>

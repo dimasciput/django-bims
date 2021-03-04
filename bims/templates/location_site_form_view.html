@@ -51,9 +51,6 @@
 
 {% block body_content %}
 
-    <form action="{{ request.path }}" method="post" id="site-form"
-          class="needs-validation" novalidate enctype="multipart/form-data">
-        {% csrf_token %}
         {% if update %}
             <input type="hidden" name="id" value="{{ site_id }}">
         {% endif %}
@@ -82,7 +79,11 @@
             <div class="alert alert-danger" role="alert"
                  style="display: none;">
             </div>
-            <div id="site-map"></div>
+            {% include "map_snippet.html" %}
+    <form action="{{ request.path }}" method="post" id="site-form"
+          class="needs-validation" novalidate enctype="multipart/form-data">
+        {% csrf_token %}
+{#            <div id="site-map"></div>#}
             {% if update and preferences.SiteSetting.default_data_source.lower == 'fbis'%}
                 <div class="form-group row">
                     <div class="col-lg-12">

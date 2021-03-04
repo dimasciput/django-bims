@@ -88,7 +88,7 @@ $('#longitude').keyup((e) => {
 });
 
 let markerSource = new ol.source.Vector();
-let map = null;
+// let map = null;
 let updateCoordinateHandler = (e) => {
     let latitude = $('#latitude').val();
     let longitude = $('#longitude').val();
@@ -245,18 +245,17 @@ $(function () {
             collectionIdList.push(collectionId);
         }
     });
-
-    let locationSiteCoordinate = ol.proj.transform([
+    const locationSiteCoordinate = ol.proj.transform([
             parseFloat(location_site_long),
             parseFloat(location_site_lat)],
         'EPSG:4326',
         'EPSG:3857');
-    let markerStyle = new ol.style.Style({
+    const markerStyle = new ol.style.Style({
         image: new ol.style.Icon(({
             anchor: [0.5, 46],
             anchorXUnits: 'fraction',
             anchorYUnits: 'pixels',
-            opacity: 0.75,
+            opacity: 1,
             src: '/static/img/map-marker.png'
         }))
     });
@@ -264,24 +263,12 @@ $(function () {
         geometry: new ol.geom.Point(locationSiteCoordinate),
     });
     markerSource.addFeature(iconFeature);
-
-    map = new ol.Map({
-        target: 'fish-map',
-        layers: [
-            new ol.layer.Tile({
-                source: new ol.source.OSM()
-            }),
-            new ol.layer.Vector({
-                source: markerSource,
-                style: markerStyle,
-            }),
-        ],
-        view: new ol.View({
-            center: locationSiteCoordinate,
-            zoom: 10
-        })
-    });
-
+    map.getView().setCenter(locationSiteCoordinate);
+    map.getView().setZoom(10);
+    map.addLayer(new ol.layer.Vector({
+        source: markerSource,
+        style: markerStyle,
+    }))
     let biodiversityLayersOptions = {
         url: geoserverPublicUrl + 'wms',
         params: {

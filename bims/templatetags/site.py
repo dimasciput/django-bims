@@ -43,6 +43,16 @@ def filename(value):
 
 
 @register.simple_tag
+def basemap_layers():
+    from bims.models.basemap_layer import BaseMapLayer
+    import json
+    from bims.serializers.basemap_serializer import BaseMapLayerSerializer
+    return mark_safe(json.dumps(BaseMapLayerSerializer(
+        BaseMapLayer.objects.all().order_by('order'),
+        many=True).data))
+
+
+@register.simple_tag
 def current_version():
     from git import Repo
 
