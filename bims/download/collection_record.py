@@ -3,6 +3,8 @@ import csv
 import time
 import gc
 
+from django.core.cache import cache
+
 from bims.models.download_request import DownloadRequest
 
 logger = logging.getLogger(__name__)
@@ -64,7 +66,10 @@ def download_collection_records(
         path_file,
         request,
         send_email=False,
-        user_id=None
+        user_id=None,
+        start_index=0,
+        end_index=0,
+        batch_size=250
 ):
     from django.contrib.auth import get_user_model
     from bims.serializers.bio_collection_serializer import (
@@ -73,6 +78,7 @@ def download_collection_records(
     from bims.api_views.search import CollectionSearch
     from bims.models import BiologicalCollectionRecord
     from bims.api_views.csv_download import send_csv_via_email
+    from bims.tasks.collection_record import download_collection_record_task
 
     start = time.time()
 
@@ -104,66 +110,56 @@ def download_collection_records(
             site__id__in=site_ids
         ).distinct()
 
-    current_csv_row = 0
-    record_number = 100 if total_records >= 100 else total_records
     headers = []
-    collection_data = []
 
-    for obj in queryset_iterator(collection_results):
-        collection_data.append(obj)
-        if len(collection_data) >= record_number:
-            serializer = BioCollectionOneRowSerializer(
-                collection_data,
-                many=True,
-                context={
-                    'header': headers
-                }
-            )
-            rows = serializer.data
-            headers = serializer.context['header']
-            start_index = current_csv_row
-            current_csv_row = write_to_csv(
-                headers,
-                rows,
-                path_file,
-                current_csv_row
-            )
-            logger.debug('Serialize time {0}:{1}: {2}'.format(
-                start_index,
-                current_csv_row,
-                round(time.time() - start, 2))
-            )
-            if download_request:
-                download_request.progress = f'{start_index}/{total_records}'
-                download_request.save()
-            del rows
-            del collection_data
-            del serializer
-            collection_data = []
-            gc.collect()
+    if end_index == 0:
+        end_index = batch_size
+    if end_index > total_records:
+        end_index = total_records
 
-    if collection_data:
-        serializer = BioCollectionOneRowSerializer(
-            collection_data,
-            many=True,
-            context={
-                'header': headers
-            }
+    serializer = BioCollectionOneRowSerializer(
+        collection_results[start_index:end_index],
+        many=True,
+        context={
+            'header': headers
+        }
+    )
+    rows = serializer.data
+    headers = serializer.context['header']
+    current_csv_row = write_to_csv(
+        headers,
+        rows,
+        path_file,
+        start_index
+    )
+    logger.debug('Serialize time {0}:{1}: {2}'.format(
+        start_index,
+        current_csv_row,
+        round(time.time() - start, 2))
+    )
+    start_index = end_index
+    if end_index + batch_size > total_records:
+        end_index = total_records
+    else:
+        end_index += batch_size
+    if download_request:
+        download_request.progress = f'{start_index}/{total_records}'
+        download_request.save()
+    gc.collect()
+
+    if end_index <= total_records and start_index < total_records:
+        lock_id = '{0}-lock-{1}'.format(
+            download_collection_record_task.name,
+            path_file
         )
-        rows = serializer.data
-        headers = serializer.context['header']
-        start_index = current_csv_row
-        current_csv_row = write_to_csv(
-            headers,
-            rows,
-            path_file,
-            current_csv_row
-        )
-        logger.debug('Serialize time {0}:{1}: {2}'.format(
-            start_index,
-            current_csv_row,
-            round(time.time() - start, 2))
-        )
+        cache.delete(lock_id)
+        download_collection_record_task.delay(
+            path_file, request,
+            send_email=send_email,
+            user_id=user_id,
+            start_index=start_index,
+            end_index=end_index)
+        return
 
     logger.debug('Serialize time : {}'.format(
         round(time.time() - start, 2))
@@ -174,8 +170,10 @@ def download_collection_records(
         download_request.save()
 
     logger.debug(
-        'Write csv time : {}'.format(
-            round(time.time() - start, 2)
+        'Write csv time : {0}, {1}, {2}'.format(
+            round(time.time() - start, 2),
+            user_id,
+            send_email
         )
     )
 
