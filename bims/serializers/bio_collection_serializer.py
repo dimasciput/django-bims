@@ -99,7 +99,7 @@ class BioCollectionOneRowSerializer(
     site_code = serializers.SerializerMethodField()
     user_site_code = serializers.SerializerMethodField()
     site_description = serializers.SerializerMethodField()
-    refined_geomorphological_zone = serializers.SerializerMethodField()
+    user_geomorphological_zone = serializers.SerializerMethodField()
     river_name = serializers.SerializerMethodField()
     latitude = serializers.SerializerMethodField()
     longitude = serializers.SerializerMethodField()
@@ -240,7 +240,7 @@ class BioCollectionOneRowSerializer(
             return obj.site.legacy_river_name
         return '-'
 
-    def get_refined_geomorphological_zone(self, obj):
+    def get_user_geomorphological_zone(self, obj):
         if obj.site.refined_geomorphological:
             return obj.site.refined_geomorphological
         return '-'
@@ -606,7 +606,7 @@ class BioCollectionOneRowSerializer(
             'user_site_code',
             'site_code',
             'site_description',
-            'refined_geomorphological_zone',
+            'user_geomorphological_zone',
             'latitude',
             'longitude',
             'sampling_date',

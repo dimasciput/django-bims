@@ -233,7 +233,9 @@ class OccurrenceProcessor(object):
             allowed_geometry='POINT'
         )
         site_description = DataCSVUpload.row_value(record, SITE_DESCRIPTION)
-        refined_geo = DataCSVUpload.row_value(record, REFINED_GEO_ZONE)
+        user_geo_zone = DataCSVUpload.row_value(record, REFINED_GEO_ZONE)
+        if not user_geo_zone:
+            user_geo_zone = DataCSVUpload.row_value(record, USER_GEO_ZONE)
         legacy_river_name = DataCSVUpload.row_value(
             record, USER_RIVER_NAME
         )
@@ -314,8 +316,8 @@ class OccurrenceProcessor(object):
             location_site.legacy_site_code = legacy_site_code
         if not location_site.site_description and site_description:
             location_site.site_description = site_description
-        if refined_geo:
-            location_site.refined_geomorphological = refined_geo
+        if user_geo_zone:
+            location_site.refined_geomorphological = user_geo_zone
         if legacy_river_name:
             location_site.legacy_river_name = legacy_river_name
         if not location_site.site_code:

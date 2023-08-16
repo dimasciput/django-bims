@@ -64,6 +64,7 @@ USER_RIVER_NAME = 'User River Name'
 FBIS_SITE_CODE = 'FBIS Site Code'
 SITE_DESCRIPTION = 'Site description'
 REFINED_GEO_ZONE = 'Refined Geomorphological Zone'
+USER_GEO_ZONE = 'User Geomorphological Zone'
 ENDEMISM = 'Endemism'
 CATEGORY = 'Category'
 ORIGIN = 'Origin'
@@ -575,6 +576,8 @@ class Command(BaseCommand):
         )
         site_description = self.row_value(record, SITE_DESCRIPTION)
         refined_geo = self.row_value(record, REFINED_GEO_ZONE)
+        if not refined_geo:
+            refined_geo = self.row_value(record, USER_GEO_ZONE)
         legacy_river_name = self.row_value(record, USER_RIVER_NAME)
         if not legacy_river_name:
             legacy_river_name = self.row_value(record, ORIGINAL_RIVER_NAME)

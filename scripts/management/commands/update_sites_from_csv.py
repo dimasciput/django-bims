@@ -13,7 +13,7 @@ LONGITUDE = 'Longitude'
 CORRECTED_LATITUDE = 'Corrected Latitude'
 CORRECTED_LONGITUDE = 'Corrected Longitude'
 USER_SITE_CODE = 'User Site Code'
-REFINED_GEO_ZONE = 'Refined Geomorphological Zone'
+REFINED_GEO_ZONE = 'User Geomorphological Zone'
 USER_RIVER_NAME = 'User River Name'
 FBIS_SITE_CODE = 'FBIS Site Code'
 
