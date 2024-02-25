@@ -710,10 +710,20 @@ define([
                 newExtent.push(parseFloat(extent[e]));
             }
             extent = ol.proj.transformExtent(newExtent, 'EPSG:4326', 'EPSG:3857');
+            var vectorTileLayer = new ol.layer.VectorTile({
+                source: new ol.source.VectorTile({
+                    format: new ol.format.MVT(),
+                    url: '/api/location-site-tiles/{z}/{x}/{y}/',
+                    projection: 'EPSG:3857'
+                })
+            });
 
             this.map = new ol.Map({
                 target: 'map',
-                layers: basemap.getBaseMaps(),
+                layers: [
+                    ...basemap.getBaseMaps(),
+                    vectorTileLayer,
+                ],
                 view: new ol.View({
                     center: ol.proj.fromLonLat(center),
                     zoom: this.initZoom,
