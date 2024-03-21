@@ -1,5 +1,7 @@
 import json
 from urllib.parse import urlencode
+
+from django.contrib.sites.models import Site
 from django.views.generic import ListView, UpdateView, View, CreateView
 from django.db.models import Q
 from django.contrib.auth import get_user_model
@@ -80,7 +82,9 @@ class SourceReferenceList(View):
         Add GET requests filters
         """
         filters = dict()
-        qs = SourceReference.objects.all()
+        qs = SourceReference.objects.filter(
+            biologicalcollectionrecord__source_site=Site.objects.get_current()
+        )
 
         if self.collectors:
             qs = qs.filter(
@@ -111,14 +115,14 @@ class SourceReferenceList(View):
 
         if self.search_query:
             qs = qs.filter(
-                Q(sourcereferencebibliography__source__title__icontains =
+                Q(sourcereferencebibliography__source__title__icontains=
                   self.search_query) |
-                Q(sourcereferencedocument__source__title__icontains =
+                Q(sourcereferencedocument__source__title__icontains=
                   self.search_query) |
-                Q(sourcereferencedatabase__source__name__icontains =
+                Q(sourcereferencedatabase__source__name__icontains=
                   self.search_query) |
-                Q(note__icontains = self.search_query) |
-                Q(source_name__icontains = self.search_query)
+                Q(note__icontains=self.search_query) |
+                Q(source_name__icontains=self.search_query)
             )
 
         qs = qs.filter(**filters).distinct('id')
