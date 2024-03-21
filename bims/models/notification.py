@@ -29,7 +29,7 @@ class Notification(models.Model):
     name = models.CharField(
         max_length=255,
         choices=NOTIFICATION_TYPES,
-        unique=True
+        unique=False
     )
     description = models.TextField(
         blank=True
