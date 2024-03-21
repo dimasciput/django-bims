@@ -2,6 +2,7 @@
 # coding=utf-8
 import ast
 
+from django.contrib.sites.models import Site
 from django.views.generic import ListView
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.contrib import messages
@@ -121,7 +122,9 @@ class DownloadRequestListView(
         """
         # Base queryset
         qs = super(DownloadRequestListView, self).get_queryset()
-        qs = qs.filter(requester__isnull=False)
+        qs = qs.filter(
+            source_site=Site.objects.get_current(),
+            requester__isnull=False)
         if (
                 self.approved_or_rejected is not None and
                 self.approved_or_rejected != ''
